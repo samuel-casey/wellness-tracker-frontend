@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const morgan = require('morgan');
 // const doyRouter = require('./controllers/day');
-// const activityRouter = require('./controllers/activity');
+const activityRouter = require('./controllers/activity');
 
 // Middleware
 NODE_ENV === 'production' ? app.use(cors(corsOptions)) : app.use(cors());
@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 });
 
 // app.use('/day', dayRouter);
-// app.use('/activity', activityRouter);
+app.use('/activity', activityRouter);
 
 //LISTENER
 app.listen(PORT, () => {
