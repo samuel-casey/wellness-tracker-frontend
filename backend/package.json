@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development node server.js",
-    "dev": "cross-env NODE_ENV=development nodemon server.js"
+    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "db:seed": "node db/seed.js"
   },
   "keywords": [],
   "author": "",
