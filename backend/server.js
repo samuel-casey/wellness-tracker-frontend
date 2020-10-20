@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 });
 
 // app.use('/day', dayRouter);
-app.use('/activity', activityRouter);
+app.use('/api/activity', activityRouter);
 
 //LISTENER
 app.listen(PORT, () => {
