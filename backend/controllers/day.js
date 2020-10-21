@@ -69,4 +69,17 @@ router.delete('/:id', async (req, res) => {
 	}
 });
 
+router.put('/:id', async (req, res) => {
+	try {
+		const addedActivity = await push(Day, req.params.id, req.body);
+		res.json({
+			status: 201,
+			message: 'OK',
+			data: addedActivity,
+		});
+	} catch (err) {
+		console.log(err);
+	}
+});
+
 module.exports = router;

@@ -2,7 +2,7 @@ const mongoose = require('../db/connection');
 
 // Show all documents
 const index = (collection) => {
-	return collection.find();
+	return collection.find().populate('activities');
 };
 
 // Find a document by ID and display it
@@ -54,10 +54,15 @@ const destroy = (collection, id) => {
 	}
 };
 
-// const push = (collection, id, item) => {
-// 	if (collection.modelName === 'activity') {
-// 		collection.findByIdAndUpdate(id, { $push: { activities: item } });
-// 	}
-// };
+// add a new activity to a day's activity array
+const push = (collection, id, item) => {
+	if (collection.modelName === 'day') {
+		collection.findByIdAndUpdate(
+			id,
+			{ $push: { activities: item } },
+			{ useFindAnyModify: false }
+		);
+	}
+};
 
-module.exports = { index, show, create, update, destroy };
+module.exports = { index, show, create, update, destroy, push };

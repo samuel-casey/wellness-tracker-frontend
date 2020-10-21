@@ -6,10 +6,10 @@ const daySchema = new Schema(
 		date: { type: Date, required: true },
 		activities: [
 			{
-				ref: 'Activity',
+				ref: 'activity',
 				type: Schema.Types.ObjectId,
 			},
-		],
+		],  
 	},
 	{ timestamps: true }
 );
