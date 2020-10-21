@@ -44,7 +44,7 @@ export default function App() {
 	};
 
 	const handleUpdate = (activity) => {
-		fetch(url + '/activity/' + activity._id, {
+		fetch(url + 'api/activity/' + activity._id, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -100,6 +100,18 @@ export default function App() {
 							{...rp}
 							activity={emptyActivity}
 							handleSubmit={handleCreate}
+						/>
+					)}
+				/>
+				<Route
+					exact
+					path='/edit'
+					render={(rp) => (
+						<Form
+							{...rp}
+							label='update'
+							activity={selectedActivity}
+							handleSubmit={handleUpdate}
 						/>
 					)}
 				/>
