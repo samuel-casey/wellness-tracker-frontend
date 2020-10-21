@@ -11,19 +11,26 @@ export const Form = (props) => {
 
 	const handleSubmit = (event) => {
 		event.preventDefault(); // Prevent Form from Refreshing
-		console.log(formData);
+		console.log('formdata: ', formData);
 		props.handleSubmit(formData); // Submit to Parents desired function
 		props.history.push('/'); //Push back to display page
 	};
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<div className='field'>
+			{/* THIS DATE FIELD WOULD ALLOW A USER TO SET A CUSTOM DATE FOR THEIR ACTIVITIES, RIGHT NOW IT'S JUST THE CREATED AT DATE. NEED TO FIGURE OUT HOW TO USE DAY MODEL IN CONJUNCTION WITH ACTIVITY MODEL IN ORDER TO PUSH ACTIVITIES TO THE CORRECT DAY BASED ON USER INPUT*/}
+			{/* <div className='field'>
 				<div className='control'>
 					<label className='label'>Day</label>
-					<input className='input' type='date' placeholder='' />
+					<input
+						className='input'
+						type='date'
+						name='date'
+						onChange={handleChange}
+						value={formData.date}
+					/>
 				</div>
-			</div>
+			</div> */}
 			<div className='field'>
 				<div className='control'>
 					<label className='label'>Activity</label>
@@ -70,7 +77,7 @@ export const Form = (props) => {
 							formData.activity_type ? formData.activityType : 'Meditation'
 						}>
 						<select
-							value={formData.activity_type}
+							value={formData.rating}
 							style={{ width: '20vw' }}
 							name='rating'
 							onChange={handleChange}>

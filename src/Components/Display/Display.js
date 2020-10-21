@@ -1,10 +1,13 @@
 import React from 'react';
 
 export const Display = (props) => {
-	const { activities } = props;
+	const { activities, days } = props;
 
 	console.log(activities);
+	console.log(days);
 
+	/// THIS BLOCK WILL EVENTUALLY ADD AN EMOJI TO THE SCREEN BASED ON THE ACTIVITY'S RATING
+	// activities.forEach((activity) => (activity.date = 'NULL'));
 	// let emoji;
 	// if (activities.length > 0) {
 	// 	activities.forEach((activity) => {
@@ -35,7 +38,7 @@ export const Display = (props) => {
 		<div style={{ textAlign: 'center' }}>
 			{activities.map((activity, index) => (
 				<article className='message is-link' key={index}>
-					<div class='message-header'>
+					<div className='message-header'>
 						<p>Date: {new Date(activity.createdAt).toLocaleDateString()}</p>
 						<button
 							onClick={() => {
@@ -60,7 +63,7 @@ export const Display = (props) => {
 							{activity.activity_mins} mins
 						</p>
 						<p>
-							<span style={{ fontWeight: 'bold' }}>Activity: </span>
+							<span style={{ fontWeight: 'bold' }}>Rating: </span>
 							{activity.rating}
 							{/* {emoji} */}
 						</p>

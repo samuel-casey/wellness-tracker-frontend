@@ -14,8 +14,10 @@ export default function App() {
 		: 'http:://localhost:3001';
 
 	const [activities, setActivities] = useState([]);
+	const [days, setDays] = useState([]);
 
 	const emptyActivity = {
+		date: '',
 		activity_type: '',
 		activity_mins: 0,
 		rating: 0,
@@ -29,19 +31,62 @@ export default function App() {
 			.then((data) => {
 				setActivities(data.data);
 			});
+		console.log('AAA: ', activities);
+	};
+
+	const getDays = () => {
+		fetch(url + 'api/day/')
+			.then((response) => response.json())
+			.then((data) => {
+				setDays(data.data);
+			});
 	};
 
 	const handleCreate = (newActivity) => {
+		// console.log({ date: newActivity.date, activities: [newActivity] });
 		fetch(url + 'api/activity/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(newActivity),
-		}).then(() => {
-			getActivities();
-		});
+		})
+			.then(() => {
+				getActivities();
+			})
+			.then(() => {});
 	};
+
+	// /// THIS HANDLE CREATE IS TO create for BOTH DAY AND ACTIVITY MODELS and then push the activity to the day model to the prop 'activities'
+	// // right now, the date displayed on the screen is just the created_at date for each activity
+	// const handleCreate2 = (newActivity, date) => {
+	// 	const promiseArray = [
+	// 		fetch(url + 'api/activity/', {
+	// 			method: 'POST',
+	// 			headers: {
+	// 				'Content-Type': 'application/json',
+	// 			},
+	// 			body: JSON.stringify(newActivity),
+	// 		}),
+	// 		fetch(url + `api/day/`, {
+	// 			method: 'POST',
+	// 			headers: {
+	// 				'Content-Type': 'application/json',
+	// 			},
+	// 			body: JSON.stringify(newActivity.date),
+	// 		}),
+	// 	];
+	// 	Promise.all(promiseArray).then((responses) => {
+	// 		responses
+	// 			.map((response) => {
+	// 				return response.json();
+	// 			})
+	// 			.then((dataObjects) => {
+	// 				setActivities(dataObjects.data[0]);
+	// 				setDays(dataObjects.data[1]);
+	// 			});
+	// 	});
+	// };
 
 	const handleUpdate = (activity) => {
 		fetch(url + 'api/activity/' + activity._id, {
@@ -72,13 +117,14 @@ export default function App() {
 
 	useEffect(() => {
 		getActivities();
+		getDays();
 	}, []);
 
 	return (
 		<div className='App'>
 			<h1>What did you do to stay well today?</h1>
 			<Link to='/create'>
-				<Button color='info is-light'>Add a new activity</Button>
+				<button className='button is-info is-light'>Add a new activity</button>
 			</Link>
 			<Switch>
 				<Route
@@ -87,6 +133,7 @@ export default function App() {
 					render={(rp) => (
 						<Display
 							activities={activities}
+							days={days}
 							deleteActivity={deleteActivity}
 							selectActivity={selectActivity}
 							{...rp}
