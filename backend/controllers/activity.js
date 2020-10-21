@@ -1,10 +1,7 @@
 const express = require('express');
-
 const router = express.Router();
-
 const Activity = require('../models/activity');
-const Day = require('../models/day');
-
+// REQUIRE IN MONGO/MONGOOSE COMMANDS FOR USE IN ROUTES
 const { index, show, create, update, destroy } = require('./mongoActions');
 
 router.get('/', async (req, res) => {
@@ -48,7 +45,6 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
 	try {
-		// console.log(Activity.modelName);
 		const updatedActivity = await update(Activity, req.params.id, req.body);
 		res.json({
 			status: 200,

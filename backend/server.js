@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const morgan = require('morgan');
-// const doyRouter = require('./controllers/day');
+const dayRouter = require('./controllers/day');
 const activityRouter = require('./controllers/activity');
 
 // Middleware
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 	});
 });
 
-// app.use('/day', dayRouter);
+app.use('/api/day', dayRouter);
 app.use('/api/activity', activityRouter);
 
 //LISTENER
