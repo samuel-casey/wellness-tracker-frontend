@@ -8,7 +8,7 @@ import { Form } from './Components/Form';
 
 const production = true;
 
-function App() {
+export default function App() {
 	const url = production
 		? 'https://wellness-tracker-mern.herokuapp.com/'
 		: 'http:://localhost:3001';
@@ -43,6 +43,33 @@ function App() {
 		});
 	};
 
+	const handleUpdate = (activity) => {
+		fetch(url + '/activity/' + activity._id, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(activity),
+		}).then(() => {
+			getActivities();
+		});
+	};
+
+	const selectActivity = (activity) => {
+		setSelectedActivity(activity);
+	};
+
+	const deleteActivity = (activity) => {
+		fetch(url + 'api/activity/' + activity._id, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application.json',
+			},
+		}).then(() => {
+			getActivities();
+		});
+	};
+
 	useEffect(() => {
 		getActivities();
 	}, []);
@@ -57,16 +84,27 @@ function App() {
 				<Route
 					exact
 					path='/'
-					render={(rp) => <Display activities={activities} {...rp} />}
+					render={(rp) => (
+						<Display
+							activities={activities}
+							deleteActivity={deleteActivity}
+							selectActivity={selectActivity}
+							{...rp}
+						/>
+					)}
 				/>
 				<Route
 					path='/create'
-					render={(rp) => <Form {...rp} handleSubmit={handleCreate} />}
+					render={(rp) => (
+						<Form
+							{...rp}
+							activity={emptyActivity}
+							handleSubmit={handleCreate}
+						/>
+					)}
 				/>
 				<Route path='/delete' render={(rp) => <Display {...rp} />} />
 			</Switch>
 		</div>
 	);
 }
-
-export default App;
