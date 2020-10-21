@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 
 export const Form = (props) => {
-	const [form, setForm] = useState({
+	const [formData, setFormData] = useState({
 		day: '',
 		activity_type: '',
 		activity_mins: 0,
 		rating: 0,
 	});
 	const update = ({ target }) =>
-		setForm({ ...form, [target.name]: target.value });
+		setFormData({ ...formData, [target.name]: target.value });
+
+	const handleSubmit = (event) => {
+		event.preventDefault(); // Prevent Form from Refreshing
+		props.handleSubmit(formData); // Submit to Parents desired function
+		props.history.push('/'); //Push back to display page
+	};
+
 	return (
-		// onSubmit={handleSubmit}
-		<form>
+		<form onSubmit='handleSubmit'>
 			<div className='field'>
 				<div className='control'>
 					<label className='label'>Day</label>
