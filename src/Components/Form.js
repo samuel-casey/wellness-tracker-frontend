@@ -23,7 +23,7 @@ export const Form = (props) => {
 				<div className='control'>
 					<label className='label'>Day</label>
 					<input
-						className='input'
+						className='input'	
 						type='date'
 						name='date'
 						onChange={handleChange}
