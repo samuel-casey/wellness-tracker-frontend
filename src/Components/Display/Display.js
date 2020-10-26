@@ -81,7 +81,16 @@ export const Display = (props) => {
 		</div>
 	);
 
-	const loading = 'Loading...';
+	let display;
 
-	return currentUser ? loaded : loading;
+	if (currentUser.email === '') {
+		console.log(currentUser.email);
+		display = <p>Log in to see activities</p>;
+	} else if (!currentUser) {
+		display = <p>Log in or try a demo to see activities</p>;
+	} else {
+		display = loaded;
+	}
+
+	return display;
 };

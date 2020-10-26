@@ -224,6 +224,11 @@ export default function App() {
 		console.log('signed out - ', currentUser);
 	};
 
+	const tryDemo = () => {
+		console.log(tryDemo);
+		handleLogIn(demoUser);
+	};
+
 	const selectActivity = (activity) => {
 		console.log(activity._id);
 		setSelectedActivity(activity);
@@ -242,7 +247,7 @@ export default function App() {
 	};
 
 	useEffect(() => {
-		handleLogIn(demoUser);
+		console.log('onload', currentUser);
 		getActivities(currentUser);
 	}, []);
 
@@ -251,13 +256,18 @@ export default function App() {
 			<h1>What did you do to stay well today?</h1>
 			<Link to='/create'>
 				<button className='button is-info is-light'>Add a new activity</button>
+				<br></br>
 			</Link>
+			<button className='button is-info' onClick={() => tryDemo()}>
+				Try a demo
+			</button>
 			<Switch>
 				<Route
 					exact
 					path='/'
 					render={(rp) => (
 						<>
+							<br></br>
 							<Display
 								currentUser={currentUser.email}
 								activities={activities}
@@ -266,6 +276,7 @@ export default function App() {
 								selectActivity={selectActivity}
 								{...rp}
 							/>
+							<hr></hr>
 							{/* ////// LOG IN FORM /////// */}
 							<br></br>
 							<h2>Log in</h2>
