@@ -12,7 +12,13 @@ export const Form = (props) => {
 	const handleSubmit = (event) => {
 		event.preventDefault(); // Prevent Form from Refreshing
 		console.log('formdata: ', formData);
-		props.handleSubmit(formData); // Submit to Parents desired function
+		const newActivity = {
+			activity_type: formData.activity_type,
+			activity_mins: formData.activity_mins,
+			rating: formData.rating,
+			email: props.currentUser,
+		};
+		props.handleSubmit(newActivity); // Submit to Parents desired function
 		props.history.push('/'); //Push back to display page
 	};
 
@@ -37,7 +43,7 @@ export const Form = (props) => {
 					<div
 						className='select'
 						value={
-							formData.activity_type ? formData.activityType : 'Meditation'
+							formData.activity_type ? formData.activity_type : 'Meditation'
 						}>
 						<select
 							value={formData.activity_type}

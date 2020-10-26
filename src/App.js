@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import './App.css';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
 import { Button } from 'react-bulma-components';
@@ -24,9 +24,13 @@ export default function App() {
 	const emptyUser = {
 		email: '',
 		password: '',
+		confirmPassword: '',
 	};
 
-	const [formUser, setFormUser] = useState(emptyUser);
+	// the user object for the sign in form
+	const [signInFormUser, setSignInFormUser] = useState(emptyUser);
+	// the user object for the sign up form
+	const [signUpFormUser, setSignUpFormUser] = useState(emptyUser);
 
 	const emptyActivity = {
 		date: '',
@@ -39,6 +43,7 @@ export default function App() {
 
 	// enter a username as param here once form exists
 	const handleSignUp = async (newUser) => {
+		console.log('newUser  ', newUser);
 		try {
 			const user = await fetch(url + 'auth/signup', {
 				method: 'post',
@@ -48,10 +53,17 @@ export default function App() {
 				body: JSON.stringify(newUser),
 			});
 			const response = await user.json();
-			console.log(response);
-			const data = await response.data;
-			console.log('user: ', data.email);
-			setCurrentUser(data.email);
+			if (response.status === 200) {
+				const data = await response.data;
+				// if log in successful, log in the new user
+				await handleLogIn(newUser);
+				// clear sign up form
+				setSignUpFormUser(emptyUser);
+			} else {
+				// log error if error & refresh
+				alert(response.error.error);
+				document.location.reload();
+			}
 		} catch (err) {
 			console.log(err);
 		}
@@ -89,11 +101,26 @@ export default function App() {
 		}
 	};
 
+	///////////// Handle Submit function for log in form //////////////
 	const handleUserSubmit = (e) => {
 		e.preventDefault();
-		handleLogIn(formUser);
+		handleLogIn(signInFormUser);
 		getActivities(currentUser);
-		setFormUser(emptyUser);
+		setSignInFormUser(emptyUser);
+	};
+
+	const handleUserSignUp = (e) => {
+		e.preventDefault();
+		if (signUpFormUser.password === signUpFormUser.confirmPassword) {
+			const newUser = {
+				email: signUpFormUser.email,
+				password: signUpFormUser.password,
+			};
+			handleSignUp(newUser);
+		} else {
+			alert('Woops! Your passwords do not match. Please try again.');
+			document.location.reload();
+		}
 	};
 
 	const getActivities = (currentUser) => {
@@ -121,18 +148,16 @@ export default function App() {
 	};
 
 	const handleCreate = (newActivity) => {
-		// console.log({ date: newActivity.date, activities: [newActivity] });
 		fetch(url + 'api/activity/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `bearer ${currentUser.token}`,
 			},
 			body: JSON.stringify(newActivity),
-		})
-			.then(() => {
-				getActivities(currentUser);
-			})
-			.then(() => {});
+		}).then(() => {
+			getActivities(currentUser);
+		});
 	};
 
 	// /// THIS HANDLE CREATE IS TO create for BOTH DAY AND ACTIVITY MODELS and then push the activity to the day model to the prop 'activities'
@@ -166,18 +191,26 @@ export default function App() {
 	// 	});
 	// };
 
+	///////////// Handle Change function for log in form //////////////
 	const handleUserChange = (e) => {
 		const key = e.target.name;
 		const value = e.target.value;
-		setFormUser({ ...formUser, [key]: value });
-		console.log('formUser, ', formUser);
+		setSignInFormUser({ ...signInFormUser, [key]: value });
+	};
+
+	const handleNewUserChange = (e) => {
+		const key = e.target.name;
+		const value = e.target.value;
+		setSignUpFormUser({ ...signUpFormUser, [key]: value });
 	};
 
 	const handleUpdate = (activity) => {
-		fetch(url + 'api/activity/' + activity._id, {
+		console.log('update handlah', activity);
+		fetch(url + 'api/activity/' + selectedActivity._id, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `bearer ${currentUser.token}`,
 			},
 			body: JSON.stringify(activity),
 		}).then(() => {
@@ -186,6 +219,7 @@ export default function App() {
 	};
 
 	const selectActivity = (activity) => {
+		console.log(activity._id);
 		setSelectedActivity(activity);
 	};
 
@@ -194,6 +228,7 @@ export default function App() {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application.json',
+				Authorization: `bearer ${currentUser.token}`,
 			},
 		}).then(() => {
 			getActivities(currentUser);
@@ -233,19 +268,48 @@ export default function App() {
 									type='email'
 									name='email'
 									placeholder='email'
-									value={formUser.email}
+									value={signInFormUser.email}
 									onChange={handleUserChange}
 								/>
 								<input
 									type='password'
 									name='password'
 									placeholder='password'
-									value={formUser.password}
+									value={signInFormUser.password}
 									onChange={handleUserChange}
 								/>
 								<input type='submit' />
 							</form>
 							{/* ////// END LOG IN FORM /////// */}
+
+							{/* ////// Sign Up FORM /////// */}
+							<br></br>
+							<h2>Sign up</h2>
+							<form onSubmit={handleUserSignUp}>
+								<input
+									type='email'
+									name='email'
+									placeholder='email'
+									value={signUpFormUser.email}
+									onChange={handleNewUserChange}
+								/>
+								<input
+									type='password'
+									name='password'
+									placeholder='password'
+									value={signUpFormUser.password}
+									onChange={handleNewUserChange}
+								/>
+								<input
+									type='password'
+									name='confirmPassword'
+									placeholder='confirm password'
+									value={signUpFormUser.confirmPassword}
+									onChange={handleNewUserChange}
+								/>
+								<input type='submit' />
+							</form>
+							{/* ////// Sign up FORM /////// */}
 						</>
 					)}
 				/>
@@ -256,6 +320,7 @@ export default function App() {
 							{...rp}
 							activity={emptyActivity}
 							handleSubmit={handleCreate}
+							currentUser={currentUser.email}
 						/>
 					)}
 				/>
@@ -268,6 +333,7 @@ export default function App() {
 							label='update'
 							activity={selectedActivity}
 							handleSubmit={handleUpdate}
+							currentUser={currentUser.email}
 						/>
 					)}
 				/>
