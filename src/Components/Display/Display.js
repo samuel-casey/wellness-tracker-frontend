@@ -1,10 +1,9 @@
 import React from 'react';
 
 export const Display = (props) => {
-	const { activities, days } = props;
+	const { activities, days, currentUser } = props;
 
-	console.log(activities);
-	console.log(days);
+	console.log('actividades, ', activities);
 
 	/// THIS BLOCK WILL EVENTUALLY ADD AN EMOJI TO THE SCREEN BASED ON THE ACTIVITY'S RATING
 	// activities.forEach((activity) => (activity.date = 'NULL'));
@@ -36,6 +35,7 @@ export const Display = (props) => {
 
 	const loaded = (
 		<div style={{ textAlign: 'center' }}>
+			{currentUser}
 			{activities.map((activity, index) => (
 				<article className='message is-link' key={index}>
 					<div className='message-header'>
@@ -83,5 +83,5 @@ export const Display = (props) => {
 
 	const loading = 'Loading...';
 
-	return activities.length > 0 ? loaded : loading;
+	return currentUser ? loaded : loading;
 };

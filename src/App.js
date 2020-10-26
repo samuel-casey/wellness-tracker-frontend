@@ -6,15 +6,27 @@ import { Route, Link, Switch } from 'react-router-dom';
 import { Display } from './Components/Display/Display';
 import { Form } from './Components/Form';
 
-const production = true;
+const production = false;
 
 export default function App() {
 	const url = production
 		? 'https://wellness-tracker-mern.herokuapp.com/'
-		: 'http:://localhost:3001';
+		: 'http://localhost:2008/';
 
 	const [activities, setActivities] = useState([]);
 	const [days, setDays] = useState([]);
+	const [currentUser, setCurrentUser] = useState({
+		email: 'tostones64@hotmail.com',
+		token:
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRvc3RvbmVzNjRAaG90bWFpbC5jb20iLCJpYXQiOjE2MDM2NzIzNzZ9.pKu3uhw7t5Igl5smcIz8AuCJeTySdiBiM9AGPWOcqJA',
+	});
+
+	const emptyUser = {
+		email: '',
+		password: '',
+	};
+
+	const [formUser, setFormUser] = useState(emptyUser);
 
 	const emptyActivity = {
 		date: '',
@@ -25,13 +37,79 @@ export default function App() {
 
 	const [selectedActivity, setSelectedActivity] = useState(emptyActivity);
 
-	const getActivities = () => {
-		fetch(url + 'api/activity/')
+	// enter a username as param here once form exists
+	const handleSignUp = async (newUser) => {
+		try {
+			const user = await fetch(url + 'auth/signup', {
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(newUser),
+			});
+			const response = await user.json();
+			console.log(response);
+			const data = await response.data;
+			console.log('user: ', data.email);
+			setCurrentUser(data.email);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	/// function to log a user in from the login form
+	const handleLogIn = async (user) => {
+		try {
+			const loggedIn = await fetch(url + 'auth/login', {
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(user),
+			});
+			const response = await loggedIn.json();
+			// if the user logged in successfully...
+			if (response.status === 200) {
+				const newUser = await response;
+				console.log('currentUser: ', newUser);
+				// set current user to newly logged in user
+				await setCurrentUser(newUser);
+				//get activities of the new user
+				getActivities(newUser);
+				// if there was an error with the login...
+			} else {
+				// if there's some sort of error from the server (e.g. wrong pw, no user found, send an alert and try again)
+				alert(`Woops! ${response.error} Please try again`);
+				// reload the page to clear form and avoid getting a React error
+				document.location.reload();
+			}
+		} catch (err) {
+			alert(`Error: ${err}. Please try again`);
+			document.location.reload();
+		}
+	};
+
+	const handleUserSubmit = (e) => {
+		e.preventDefault();
+		handleLogIn(formUser);
+		getActivities(currentUser);
+		setFormUser(emptyUser);
+	};
+
+	const getActivities = (currentUser) => {
+		fetch(url + 'api/activity/', {
+			method: 'get',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `bearer ${currentUser.token}`,
+			},
+		})
 			.then((response) => response.json())
 			.then((data) => {
+				console.log('b4 state ', data.data);
 				setActivities(data.data);
 			});
-		console.log('AAA: ', activities);
+		console.log('currentUser activities: ', activities);
 	};
 
 	const getDays = () => {
@@ -52,7 +130,7 @@ export default function App() {
 			body: JSON.stringify(newActivity),
 		})
 			.then(() => {
-				getActivities();
+				getActivities(currentUser);
 			})
 			.then(() => {});
 	};
@@ -88,6 +166,13 @@ export default function App() {
 	// 	});
 	// };
 
+	const handleUserChange = (e) => {
+		const key = e.target.name;
+		const value = e.target.value;
+		setFormUser({ ...formUser, [key]: value });
+		console.log('formUser, ', formUser);
+	};
+
 	const handleUpdate = (activity) => {
 		fetch(url + 'api/activity/' + activity._id, {
 			method: 'PUT',
@@ -96,7 +181,7 @@ export default function App() {
 			},
 			body: JSON.stringify(activity),
 		}).then(() => {
-			getActivities();
+			getActivities(currentUser);
 		});
 	};
 
@@ -111,13 +196,13 @@ export default function App() {
 				'Content-Type': 'application.json',
 			},
 		}).then(() => {
-			getActivities();
+			getActivities(currentUser);
 		});
 	};
 
 	useEffect(() => {
-		getActivities();
-		getDays();
+		getActivities(currentUser);
+		// getDays();
 	}, []);
 
 	return (
@@ -131,13 +216,37 @@ export default function App() {
 					exact
 					path='/'
 					render={(rp) => (
-						<Display
-							activities={activities}
-							days={days}
-							deleteActivity={deleteActivity}
-							selectActivity={selectActivity}
-							{...rp}
-						/>
+						<>
+							<Display
+								currentUser={currentUser.email}
+								activities={activities}
+								days={days}
+								deleteActivity={deleteActivity}
+								selectActivity={selectActivity}
+								{...rp}
+							/>
+							{/* ////// LOG IN FORM /////// */}
+							<br></br>
+							<h2>Log in</h2>
+							<form onSubmit={handleUserSubmit}>
+								<input
+									type='email'
+									name='email'
+									placeholder='email'
+									value={formUser.email}
+									onChange={handleUserChange}
+								/>
+								<input
+									type='password'
+									name='password'
+									placeholder='password'
+									value={formUser.password}
+									onChange={handleUserChange}
+								/>
+								<input type='submit' />
+							</form>
+							{/* ////// END LOG IN FORM /////// */}
+						</>
 					)}
 				/>
 				<Route
