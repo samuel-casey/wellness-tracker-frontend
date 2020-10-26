@@ -34,7 +34,7 @@ export const Display = (props) => {
 	const loaded = (
 		<div style={{ textAlign: 'center' }}>
 			{currentUser}
-			{activities.length > 0
+			{activities
 				? activities.map((activity, index) => (
 						<article className='message is-link' key={index}>
 							<div className='message-header'>

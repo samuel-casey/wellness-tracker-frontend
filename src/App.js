@@ -15,11 +15,6 @@ export default function App() {
 
 	const [activities, setActivities] = useState([]);
 	const [days, setDays] = useState([]);
-	const [currentUser, setCurrentUser] = useState({
-		email: 'tostones64@hotmail.com',
-		token:
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRvc3RvbmVzNjRAaG90bWFpbC5jb20iLCJpYXQiOjE2MDM2NzIzNzZ9.pKu3uhw7t5Igl5smcIz8AuCJeTySdiBiM9AGPWOcqJA',
-	});
 
 	const emptyUser = {
 		email: '',
@@ -27,19 +22,25 @@ export default function App() {
 		confirmPassword: '',
 	};
 
+	const demoUser = {
+		email: 'scasey5@babson.edu',
+		password: 'milk',
+	};
+
+	const [currentUser, setCurrentUser] = useState(emptyUser);
+
 	// the user object for the sign in form
 	const [signInFormUser, setSignInFormUser] = useState(emptyUser);
 	// the user object for the sign up form
 	const [signUpFormUser, setSignUpFormUser] = useState(emptyUser);
 
-	const emptyActivity = {
-		date: '',
-		activity_type: '',
-		activity_mins: 0,
-		rating: 0,
+	const defaultActivity = {
+		activity_type: 'Meditation',
+		activity_mins: 1,
+		rating: 5,
 	};
 
-	const [selectedActivity, setSelectedActivity] = useState(emptyActivity);
+	const [selectedActivity, setSelectedActivity] = useState(defaultActivity);
 
 	// enter a username as param here once form exists
 	const handleSignUp = async (newUser) => {
@@ -218,6 +219,11 @@ export default function App() {
 		});
 	};
 
+	const handleSignOut = () => {
+		setCurrentUser(emptyUser);
+		console.log('signed out - ', currentUser);
+	};
+
 	const selectActivity = (activity) => {
 		console.log(activity._id);
 		setSelectedActivity(activity);
@@ -236,8 +242,8 @@ export default function App() {
 	};
 
 	useEffect(() => {
+		handleLogIn(demoUser);
 		getActivities(currentUser);
-		// getDays();
 	}, []);
 
 	return (
@@ -310,6 +316,10 @@ export default function App() {
 								<input type='submit' />
 							</form>
 							{/* ////// Sign up FORM /////// */}
+
+							{/* ////// Sign out BTN /////// */}
+							<button onClick={() => handleSignOut()}>Sign Out</button>
+							{/* ////// END Sign out BTN /////// */}
 						</>
 					)}
 				/>
@@ -318,7 +328,7 @@ export default function App() {
 					render={(rp) => (
 						<Form
 							{...rp}
-							activity={emptyActivity}
+							activity={defaultActivity}
 							handleSubmit={handleCreate}
 							currentUser={currentUser.email}
 						/>

@@ -77,11 +77,7 @@ export const Form = (props) => {
 			<div className='field'>
 				<div className='control'>
 					<label className='label'>How did you feel afterwards?</label>
-					<div
-						className='select'
-						value={
-							formData.activity_type ? formData.activityType : 'Meditation'
-						}>
+					<div className='select' value={formData.rating ? formData.rating : 5}>
 						<select
 							value={formData.rating}
 							style={{ width: '20vw' }}
